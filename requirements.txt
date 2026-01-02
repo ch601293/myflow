@@ -1,0 +1,17 @@
+pykeops
+torchtyping
+linear_attention_transformer
+torchdyn
+gluonts
+aim
+lightning
+scipy
+pot
+scikit-learn
+einops
+ema_pytorch
+opt_einsum
+attrs
+hydra-core
+jupyter
+pykeops
