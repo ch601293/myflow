@@ -4,7 +4,6 @@ import tempfile
 from pathlib import Path
 
 import numpy as np
-import pykeops
 import pytorch_lightning as pl
 import torch
 import yaml
@@ -29,9 +28,15 @@ from tsflow.utils import create_transforms
 from tsflow.utils.util import ConcatDataset, add_config_to_argparser, create_splitter, filter_metrics
 from tsflow.utils.variables import get_season_length
 
-temp_build_folder = tempfile.mkdtemp(prefix="pykeops_build_")
-pykeops.set_build_folder(temp_build_folder)
-pykeops.clean_pykeops()
+# Optional pykeops setup (only if installed)
+try:
+    import pykeops
+    temp_build_folder = tempfile.mkdtemp(prefix="pykeops_build_")
+    pykeops.set_build_folder(temp_build_folder)
+    pykeops.clean_pykeops()
+except ImportError:
+    # pykeops not installed, will fall back to pure PyTorch implementations
+    pass
 
 
 def create_model(setting, target_dim, model_params):
