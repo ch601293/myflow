@@ -7,13 +7,17 @@ name = "tsflow"
 dynamic = ["version", "description"]
 authors = [{name = "Marcel Kollovieh", email = "m.kollovieh@tum.de"},]
 dependencies = [
-    "pykeops==2.1.1",
     "torchtyping==0.1.5",
     "linear_attention_transformer==0.19.1",
     "torchdyn==1.0.6",
 ]
 readme = "README.md"
 requires-python = ">= 3.11"
+
+[project.optional-dependencies]
+# pykeops provides GPU-accelerated kernel operations but has complex build requirements on Windows
+# The code will fall back to slower PyTorch implementations if pykeops is not available
+performance = ["pykeops>=2.1.1"]
 
 [tool.ruff]
 line-length = 120
@@ -23,7 +27,7 @@ ignore = ["F821"]
 
 [tool.pixi.project]
 channels = ["conda-forge"]
-platforms = ["linux-64"]
+platforms = ["linux-64", "win-64", "osx-64", "osx-arm64"]
 
 [tool.pixi.pypi-dependencies]
 tsflow = { path = ".", editable = true }

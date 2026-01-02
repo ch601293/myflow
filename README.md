@@ -6,10 +6,20 @@ Marcel Kollovieh, Marten Lienen, David Lüdke, Leo Schwinn, Stephan Günnemann
 ## Installation
 
 If you want to run our code, start by setting up the python environment.
-We use [pixi](https://pixi.sh/) to easily set up reproducible environments based on conda packages.
-Install it with `curl -fsSL https://pixi.sh/install.sh | bash` and then run
 
+### Cross-Platform Installation
+
+This project now supports **Linux**, **Windows**, and **macOS** (both Intel and Apple Silicon).
+
+#### Using pixi (Recommended)
+
+We use [pixi](https://pixi.sh/) to easily set up reproducible environments based on conda packages.
+
+**On Linux/macOS:**
 ```sh
+# Install pixi
+curl -fsSL https://pixi.sh/install.sh | bash
+
 # Clone the repository
 git clone https://github.com/marcelkollovieh/TSFlow.git
 
@@ -19,6 +29,43 @@ cd TSFlow
 # Install and activate the environment
 pixi shell
 ```
+
+**On Windows:**
+```powershell
+# Install pixi (using PowerShell)
+iwr -useb https://pixi.sh/install.ps1 | iex
+
+# Clone the repository
+git clone https://github.com/marcelkollovieh/TSFlow.git
+
+# Change into the repository
+cd TSFlow
+
+# Install and activate the environment
+pixi shell
+```
+
+#### Using pip (Alternative)
+
+Alternatively, you can use pip to install dependencies:
+
+```sh
+pip install -r requirements.txt
+pip install -e .
+```
+
+**Optional Performance Enhancement (Linux/macOS only):**
+```sh
+# Install pykeops for GPU-accelerated kernel operations
+# Note: Not recommended on Windows due to complex build requirements
+pip install pykeops>=2.1.1
+```
+
+### Platform-Specific Notes
+
+- **pykeops**: This package provides GPU-accelerated operations but has complex build requirements on Windows (requires C++ compiler and CUDA). The code automatically falls back to pure PyTorch implementations if pykeops is not available, with minimal performance impact for most use cases.
+
+- **POT (Python Optimal Transport)**: Fully cross-platform compatible and works on all supported platforms.
 
 ## Training
 

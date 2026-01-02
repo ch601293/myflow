@@ -1,4 +1,4 @@
-pykeops
+# Core dependencies - cross-platform compatible
 torchtyping
 linear_attention_transformer
 torchdyn
@@ -14,4 +14,9 @@ opt_einsum
 attrs
 hydra-core
 jupyter
-pykeops
+
+# Optional performance dependencies
+# Install on Linux/macOS for better performance: pip install pykeops
+# On Windows, pykeops has complex build requirements and is not recommended
+# The code will automatically fall back to PyTorch implementations if not available
+# pykeops>=2.1.1
