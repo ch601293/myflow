@@ -1,17 +1,23 @@
-from enum import StrEnum, auto
+from enum import Enum
+
+
+# Python 3.10 compatibility: StrEnum is only available in Python 3.11+
+class StrEnum(str, Enum):
+    """String Enum for Python < 3.11 compatibility."""
+    pass
 
 
 class Setting(StrEnum):
-    UNIVARIATE = auto()
-    MULTIVARIATE = auto()
+    UNIVARIATE = "univariate"
+    MULTIVARIATE = "multivariate"
 
 
 class Prior(StrEnum):
-    SN = auto()
-    ISO = auto()
-    OU = auto()
-    SE = auto()
-    PE = auto()
+    SN = "sn"
+    ISO = "iso"
+    OU = "ou"
+    SE = "se"
+    PE = "pe"
 
 
 season_lengths = {
