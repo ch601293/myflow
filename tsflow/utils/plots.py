@@ -1,16 +1,18 @@
 from io import BytesIO
 
-import aim
 import matplotlib.pyplot as plt
 import numpy as np
-import PIL
+import torch
+from PIL import Image
+import torchvision.transforms.functional as TF
 
 
-def render_figure(fig: plt.Figure) -> PIL.Image:
+def render_figure(fig: plt.Figure) -> Image.Image:
     """Render a matplotlib figure into a Pillow image."""
     buf = BytesIO()
-    fig.savefig(buf, **{"format": "rgba"})
-    return PIL.Image.frombuffer("RGBA", fig.canvas.get_width_height(), buf.getbuffer(), "raw", "RGBA", 0, 1)
+    fig.savefig(buf, format="png", bbox_inches='tight')
+    buf.seek(0)
+    return Image.open(buf)
 
 
 def plot_figures(tss, forecasts, context_length, prediction_length, trainer, set="val"):
@@ -37,11 +39,24 @@ def plot_figures(tss, forecasts, context_length, prediction_length, trainer, set
         )
         ax.legend(loc="upper left", fontsize="xx-small")
 
-    metrics = {
-        f"{set}/sample": aim.Image(render_figure(fig)),
-    }
+    # Convert PIL Image to tensor for TensorBoard
+    pil_image = render_figure(fig)
+    # Convert PIL to tensor (C, H, W) format
+    image_tensor = TF.to_tensor(pil_image)
 
-    [logger.log_metrics(metrics, step=trainer.global_step) for logger in trainer.loggers]
+    # Log to TensorBoard
+    for logger in trainer.loggers:
+        if hasattr(logger.experiment, 'add_image'):
+            # TensorBoard logger
+            logger.experiment.add_image(
+                f"{set}/sample",
+                image_tensor,
+                global_step=trainer.global_step
+            )
+        else:
+            # Fallback for other loggers
+            metrics = {f"{set}/sample": pil_image}
+            logger.log_metrics(metrics, step=trainer.global_step)
 
 
 def save_figures(tss, forecasts, context_length, prediction_length, logdir):

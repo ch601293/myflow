@@ -8,7 +8,7 @@ import pykeops
 import pytorch_lightning as pl
 import torch
 import yaml
-from aim.pytorch_lightning import AimLogger
+from pytorch_lightning.loggers import TensorBoardLogger
 from gluonts.dataset.loader import TrainDataLoader
 from gluonts.dataset.multivariate_grouper import MultivariateGrouper
 from gluonts.dataset.split import OffsetSplitter
@@ -289,7 +289,13 @@ if __name__ == "__main__":
         if updated_val != orig_val:
             logging.info(f"Updated key '{k}': {orig_val} -> {updated_val}")
     config.update(config_updates)
-    aim_logger = AimLogger()
-    aim_logger.log_hyperparams(config)
-    config["logdir"] = args.logdir + "/" + aim_logger.version
-    main(**config, loggers=[aim_logger])
+
+    # Create TensorBoard logger
+    tb_logger = TensorBoardLogger(
+        save_dir=args.logdir,
+        name="tsflow_experiments",
+        default_hp_metric=False,
+    )
+    tb_logger.log_hyperparams(config)
+    config["logdir"] = args.logdir + "/" + tb_logger.name + "/version_" + str(tb_logger.version)
+    main(**config, loggers=[tb_logger])

@@ -3,25 +3,36 @@ from typing import List
 
 import numpy as np
 import torch
-from aim.sdk.objects.image import Image, convert_to_aim_image_list
+from PIL import Image
+import torchvision.transforms.functional as TF
 
 
 class MediaLogger:
     def __init__(self, logdir):
         self.logdir = logdir
 
-    def save_image(self, filename: str, image: Image):
+    def save_image(self, filename: str, image: Image.Image):
+        """Save a PIL Image to disk."""
         filename = Path(self.logdir) / f"{filename}.png"
         filename.parent.mkdir(parents=True, exist_ok=True)
-        image.to_pil_image().save(filename)
+        image.save(filename)
 
-    def save_images(self, filename: str, images: List[Image]):
+    def save_images(self, filename: str, images: List[Image.Image]):
+        """Save a list of PIL Images to disk."""
         for idx, image in enumerate(images):
             self.save_image(f"{filename}_{idx}", image)
 
     def save_tensor_as_images(self, filename: str, data: torch.Tensor):
-        aim_images = convert_to_aim_image_list(data)
-        self.save_images(filename, aim_images)
+        """Convert tensor to PIL images and save them."""
+        # Assume data shape is (N, C, H, W) or (C, H, W)
+        if data.dim() == 3:
+            data = data.unsqueeze(0)  # Add batch dimension
+
+        images = []
+        for i in range(data.shape[0]):
+            img = TF.to_pil_image(data[i].cpu())
+            images.append(img)
+        self.save_images(filename, images)
 
     def save_tensor_as_npy(self, filename: str, data: torch.Tensor):
         filename = Path(self.logdir) / f"{filename}.npy"

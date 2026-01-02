@@ -1,4 +1,4 @@
-import aim
+from PIL import Image
 from pytorch_lightning.loggers.logger import Logger
 from pytorch_lightning.utilities import rank_zero_only
 
@@ -27,9 +27,11 @@ class SemlLogger(Logger):
     @rank_zero_only
     def log_metrics(self, metrics, step):
         for key, val in metrics.items():
-            if isinstance(val, aim.Image):
+            if isinstance(val, Image.Image):
+                # Save PIL Image to disk
                 self.media_logger.save_image(f"{key}_{step}", val)
             else:
+                # Save scalar metrics
                 if key not in self.experiment.current_run.info:
                     self.experiment.current_run.info[key] = []
                 self.experiment.current_run.info[key].append(val)

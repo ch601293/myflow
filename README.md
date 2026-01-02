@@ -69,12 +69,30 @@ pip install pykeops>=2.1.1
 
 ## Training
 
-Start a training by running `train.py` with the your settings, for example
+Start a training by running `train.py` with the your settings, for example:
 ```sh
 python bin/train_model.py -c configs_local/train_conditional.yaml
 ```
 
 The results will be logged in `./logs`
+
+### Monitoring Training with TensorBoard
+
+This project uses **TensorBoard** for experiment tracking and visualization (cross-platform compatible). To monitor your training:
+
+```sh
+# Start TensorBoard (in a separate terminal)
+tensorboard --logdir=./logs
+
+# Then open your browser to http://localhost:6006
+```
+
+TensorBoard will show:
+- **Scalars**: Training loss, validation metrics (CRPS, ND, NRMSE)
+- **Images**: Forecast visualization samples
+- **HParams**: Hyperparameter configurations
+
+**Note**: We replaced the previous `aim` package with `tensorboard` for better cross-platform compatibility (Windows, macOS, Linux).
 
 ## Citation
 

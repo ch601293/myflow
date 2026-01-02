@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 
-from aim.pytorch_lightning import AimLogger
+from pytorch_lightning.loggers import TensorBoardLogger
 from seml.database import get_collection
 
 from tsflow.seml_util.logger import SemlLogger
@@ -24,6 +24,13 @@ def create_logdir(logdir, ex):
 
 def get_loggers(ex, run_name, logdir, hparams, media_logger):
     seml_logger = SemlLogger(ex, logdir, media_logger)
-    aim_logger = AimLogger(run_name=run_name)
-    aim_logger.log_hyperparams(hparams)
-    return [aim_logger, seml_logger]
+
+    # Create TensorBoard logger
+    tb_logger = TensorBoardLogger(
+        save_dir=logdir,
+        name=run_name,
+        default_hp_metric=False,
+    )
+    tb_logger.log_hyperparams(hparams)
+
+    return [tb_logger, seml_logger]
